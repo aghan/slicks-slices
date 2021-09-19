@@ -13,7 +13,6 @@ export default function usePizza({ pizzas, values }) {
   const [message, setMessage] = useState(false);
 
   // const silly = useContext(OrderContext);
-  // console.log(silly);
   // make a function to add to order
   function addToOrder(orderedPizza) {
     setOrder([...order, orderedPizza]);
