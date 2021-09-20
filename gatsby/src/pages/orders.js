@@ -12,20 +12,20 @@ import PizzaOrder from '../components/PizzaOrder';
 import calculateOrderTotal from '../utils/calculateOrderTotal';
 
 export default function OrderPage({ data }) {
+  const pizzas = data.pizzas.nodes;
   const { values, updateValue } = useForm({
     name: '',
     email: '',
     mapleSyrup: '',
   });
-  const pizzas = data.pizzas.nodes;
   const {
     order,
     addToOrder,
     removeFromOrder,
-    submitOrder,
     error,
     loading,
     message,
+    submitOrder,
   } = usePizza({
     pizzas,
     values,
@@ -36,45 +36,49 @@ export default function OrderPage({ data }) {
   }
   return (
     <>
-      <SEO title="Orders page" />
+      <SEO title="Order a Pizza!" />
       <OrderStyles onSubmit={submitOrder}>
         <fieldset disabled={loading}>
           <legend>Your Info</legend>
-          <label htmlFor="name">Name</label>
-          <input
-            type="text"
-            name="name"
-            value={values.name}
-            onChange={updateValue}
-          />
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            name="email"
-            value={values.email}
-            onChange={updateValue}
-          />
+          <label htmlFor="name">
+            Name
+            <input
+              type="text"
+              name="name"
+              id="name"
+              value={values.name}
+              onChange={updateValue}
+            />
+          </label>
+          <label htmlFor="email">
+            Email
+            <input
+              type="email"
+              name="email"
+              id="email"
+              value={values.email}
+              onChange={updateValue}
+            />
+          </label>
           <input
             type="mapleSyrup"
             name="mapleSyrup"
             id="mapleSyrup"
             value={values.mapleSyrup}
+            onChange={updateValue}
             className="mapleSyrup"
-            onChange={updateValue}
-          />
-          <label htmlFor="coupon">Coupon</label>
-          <input
-            type="text"
-            name="coupon"
-            value={values.coupon}
-            onChange={updateValue}
           />
         </fieldset>
-        <fieldset className="menu" disabled={loading}>
+        <fieldset disabled={loading} className="menu">
           <legend>Menu</legend>
           {pizzas.map((pizza) => (
             <MenuItemStyles key={pizza.id}>
-              <Img fluid={pizza.image.asset.fluid} width="50" height="50" />
+              <Img
+                width="50"
+                height="50"
+                fluid={pizza.image.asset.fluid}
+                alt={pizza.name}
+              />
               <div>
                 <h2>{pizza.name}</h2>
               </div>
@@ -97,30 +101,24 @@ export default function OrderPage({ data }) {
             </MenuItemStyles>
           ))}
         </fieldset>
-        <fieldset className="order" disabled={loading}>
+        <fieldset disabled={loading} className="order">
           <legend>Order</legend>
           <PizzaOrder
             order={order}
-            pizzas={pizzas}
             removeFromOrder={removeFromOrder}
+            pizzas={pizzas}
           />
         </fieldset>
         <fieldset disabled={loading}>
           <h3>
-            Your Order total is{' '}
-            {formatMoney(calculateOrderTotal(order, pizzas))}
+            Your Total is {formatMoney(calculateOrderTotal(order, pizzas))}
           </h3>
-          <div>
-            {error ? (
-              <p>
-                Error: <span className="error-msg">{error}</span>
-              </p>
-            ) : (
-              ''
-            )}
-          </div>
+          <div aria-live="polite" aria-atomic="true">{error ? <p>Error: {error}</p> : ''}</div>
           <button type="submit" disabled={loading}>
-            {loading ? 'Placing Order...' : 'Order Ahead'}
+            <span aria-live="assertive" aria-atomic="true">
+              {loading ? 'Placing Order...' : ''}
+            </span>
+            {loading ? '' : 'Order Ahead'}
           </button>
         </fieldset>
       </OrderStyles>
